@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no, user-scalable=no, viewport-fit=cover">
+    <title>Flo Clone Mini App</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Подключение Telegram WebApp API -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Подключение Feather Icons (для плейсхолдеров) -->
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <div class="app">
+        <main class="content">
+
+            <!-- ============================ -->
+            <!-- ==== Экран "Сегодня" ==== -->
+            <!-- ============================ -->
+            <div id="screen-today" class="screen active">
+                <header class="screen-header">
+                    <div class="user-avatar-placeholder"></div>
+                    <div class="current-date">19 марта</div>
+                    <div class="header-icons">
+                        <div class="icon-button calendar-icon" id="calendar-nav-icon" data-feather="calendar"></div>
+                        <div class="icon-button settings-icon" id="settings-nav-icon" data-feather="settings"></div>
+                    </div>
+                </header>
+
+                 <section class="main-visual">
+                    <div class="wave-background"></div>
+                    <p class="cycle-day-label">Месячные:</p>
+                    <h1 class="cycle-day-number">3-й день</h1>
+                    <button class="change-dates-btn">Изменить даты месячных</button>
+                </section>
+
+                <section class="daily-stats">
+                    <div class="section-header">
+                         <h2>Статьи на каждый день</h2>
+                    </div>
+                    <div class="cards-container">
+                        <div class="card symptom-card">
+                            <span class="card-icon" data-feather="plus"></span>
+                            <p>Отметьте симптомы</p>
+                        </div>
+                        <div class="card fertility-card">
+                             <div class="card-header"><span class="check-icon" data-feather="check-circle"></span> Помощник по здоровью</div>
+                             <p>Вероятность забеременеть сегодня</p>
+                             <a href="#">Перейти к прогнозу</a>
+                        </div>
+                        <div class="card assistant-card">
+                            <div class="card-header">Помощник по здоровью</div>
+                            <p>Начало менструации</p>
+                             <span class="subtext-icon" data-feather="message-circle"></span>
+                        </div>
+                        <div class="card possible-symptoms-card">
+                             <div class="card-header">19 марта:</div>
+                             <p>возможные симптомы</p>
+                             <div class="symptom-icons-row">
+                                 <span class="s-icon">😊</span>
+                                 <span class="s-icon">😥</span>
+                                 <span class="s-icon">💖</span>
+                             </div>
+                        </div>
+                         {/* Add more cards if needed for scroll */}
+                    </div>
+                </section>
+
+                <section class="my-cycles-summary">
+                     <div class="section-header">
+                        <h2>Мои циклы</h2>
+                        <a href="#" class="view-all-link" id="view-all-cycles-link">Смотреть все <span class="arrow" data-feather="chevron-right"></span></a>
+                    </div>
+                    {/* Карточки из screen_my_cycles.png */}
+                     <div class="card cycle-info-card">
+                         <div class="info-row">
+                             <span class="info-label">Длина предыдущего цикла</span>
+                             <span class="info-icon" data-feather="info"></span>
+                         </div>
+                         <div class="info-row">
+                             <span class="info-value">32 дня</span>
+                             <span class="status-ok"><span class="check-icon" data-feather="check-circle"></span> НОРМА</span>
+                         </div>
+                     </div>
+                     <div class="card cycle-info-card">
+                         <div class="info-row">
+                             <span class="info-label">Длина предыдущих месячных</span>
+                             <span class="info-icon" data-feather="info"></span>
+                         </div>
+                         <div class="info-row">
+                             <span class="info-value">6 дней</span>
+                             <span class="status-ok"><span class="check-icon" data-feather="check-circle"></span> НОРМА</span>
+                         </div>
+                     </div>
+                     {/* Карточка с предупреждением */}
+                     <div class="card cycle-info-card">
+                         <div class="info-row">
+                             <span class="info-label">Колебания длины цикла</span>
+                              <span class="info-icon" data-feather="info"></span>
+                         </div>
+                         <div class="info-row">
+                             <span class="info-value">24-42 дня</span>
+                             <span class="status-warning"><span class="warning-icon" data-feather="alert-triangle"></span> НЕРЕГУЛЯРНЫЙ</span>
+                         </div>
+                     </div>
+                     {/* Ассистент Flo */}
+                     <div class="assistant-flo-card">
+                          <div class="assistant-flo-icon"></div>
+                         <div class="assistant-flo-text">
+                             <p>Давайте проанализируем статистику вашего предыдущего цикла, отмеченные симптомы, события и настроение.</p>
+                             <button>Давайте обсудим!</button>
+                         </div>
+                     </div>
+                     {/* Текущий цикл из другого скрина */}
+                     <div class="card cycle-info-card current-cycle-link" id="nav-to-detailed-stats-from-today">
+                          <div class="info-row">
+                             <span class="info-label">Текущий цикл: 3 дня</span>
+                             <span class="arrow" data-feather="chevron-right"></span>
+                         </div>
+                         <div class="info-row cycle-dots-row">
+                             <span class="sub-label">Начался 17 мар.</span>
+                              <div><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+                         </div>
+                     </div>
+                </section>
+                <div style="height: 16px;"></div>
+            </div>
+
+            <!-- =============================================== -->
+            <!-- ==== Экран "Детальная статистика" (График) ==== -->
+            <!-- =============================================== -->
+            <div id="screen-detailed-stats" class="screen">
+                 <header class="screen-header">
+                     <div class="back-button" onclick="goBack()" data-feather="chevron-left"></div>
+                     <div class="current-date">Сегодня</div>
+                     <div class="header-icons">
+                         <div class="icon-button calendar-icon" id="calendar-nav-icon-from-stats" data-feather="calendar"></div>
+                     </div>
+                 </header>
+                 <section class="dynamics-section card">
+                     <div class="dynamics-header">
+                         <div class="dynamics-title">Динамика цикла</div>
+                         <div class="info-icon" data-feather="info"></div>
+                     </div>
+                     <div class="dynamics-description">
+                         Один из 6 последних полных циклов был слишком длинным. График и анализ циклов можно посмотреть ниже.
+                     </div>
+                     <div class="chart-container">
+                        <canvas id="cycleLengthChartCanvas"></canvas>
+                     </div>
+                     <div class="chart-legend">
+                         <span class="chart-legend-box"></span>
+                         <span>В пределах нормального диапазона (21-35 дней)</span>
+                     </div>
+                 </section>
+                 <section class="history-section">
+                      <h2>История циклов</h2>
+                      <div class="cycle-history-list">
+                         <div class="card cycle-history-item">
+                             <div class="cycle-info">
+                                 <div class="cycle-duration">32 дня</div>
+                                 <div class="cycle-dates">13 февр. — 16 мар.</div>
+                                 <div class="cycle-dots">
+                                     <span class="dot dot-pink"></span><span class="dot dot-pink"></span><span class="dot dot-pink"></span><span class="dot dot-pink"></span><span class="dot dot-pink"></span>
+                                     <span class="dot dot-teal"></span><span class="dot dot-teal"></span><span class="dot dot-teal"></span><span class="dot dot-teal"></span><span class="dot dot-teal"></span><span class="dot dot-teal"></span>
+                                     <span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span>
+                                 </div>
+                             </div>
+                             <div class="arrow" data-feather="chevron-right"></div>
+                         </div>
+                          <div class="card cycle-history-item">
+                             <div class="cycle-info">
+                                 <div class="cycle-duration">30 дней</div>
+                                 <div class="cycle-dates">14 янв. — 12 февр.</div>
+                                  <div class="cycle-dots">
+                                      <span class="dot dot-pink"></span><span class="dot dot-pink"></span><span class="dot dot-pink"></span><span class="dot dot-pink"></span><span class="dot dot-pink"></span>
+                                      <span class="dot dot-teal"></span><span class="dot dot-teal"></span><span class="dot dot-teal"></span><span class="dot dot-teal"></span><span class="dot dot-teal"></span>
+                                      <span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span><span class="dot dot-grey"></span>
+                                  </div>
+                              </div>
+                              <div class="arrow" data-feather="chevron-right"></div>
+                         </div>
+                         {/* Add more history items */}
+                      </div>
+                 </section>
+                 <div style="height: 16px;"></div>
+            </div>
+
+            <!-- ========================== -->
+            <!-- ==== Экран "Статьи" ==== -->
+            <!-- ========================== -->
+             <div id="screen-articles" class="screen">
+                 <header class="screen-header with-border">
+                     <div class="user-avatar-placeholder"></div>
+                     <div class="current-date">Всё о репродуктивном здоровье</div>
+                      <div class="header-icons">
+                        <div class="icon-button bookmark-icon" data-feather="bookmark"></div>
+                        <div class="icon-button bell-icon" data-feather="bell"></div>
+                    </div>
+                 </header>
+                 <section class="articles-section">
+                     <h2>Как поддерживать гигиену</h2>
+                     <div class="article-cards-horizontal">
+                         <div class="article-card large">
+                             <img src="placeholder_hygiene.png" alt="Гигиена">
+                             <div class="card-text">Как поддерживать гигиену вульвы</div>
+                         </div>
+                         <div class="article-card large">
+                             <img src="placeholder_pregnancy.png" alt="Признаки беременности">
+                              <div class="card-text">Ранние признаки беременности</div>
+                         </div>
+                          <div class="article-card large">
+                             <img src="placeholder_ovulation_article.png" alt="Овуляция">
+                             <div class="card-text">Овуляция: что нужно знать</div>
+                         </div>
+                     </div>
+                 </section>
+                 <section class="articles-section">
+                     <h2>Секс</h2>
+                      <div class="article-cards-horizontal">
+                          <div class="article-card video-card">
+                             <img src="placeholder_sex_video.png" alt="Видео курс">
+                             <div class="play-icon"><span data-feather="play"></span>Video Course</div>
+                              <div class="card-text">Все об оргазме</div>
+                         </div>
+                          <div class="article-card">
+                             <img src="placeholder_sex_tips.png" alt="Советы">
+                             <div class="card-text">Мастурбация: 9 отличных советов</div>
+                         </div>
+                     </div>
+                 </section>
+                  <section class="articles-section">
+                     <h2>Во время месячных</h2>
+                      <div class="article-cards-horizontal">
+                          <div class="article-card">
+                             <img src="placeholder_period_pain.png" alt="Боль">
+                             <div class="card-text">Как облегчить боль при месячных</div>
+                         </div>
+                         <div class="article-card">
+                             <img src="placeholder_period_products.png" alt="Продукты">
+                              <div class="card-text">Выбор средств гигиены</div>
+                         </div>
+                     </div>
+                 </section>
+            </div>
+
+            <!-- ============================= -->
+            <!-- ==== Экран "Партнер" ==== -->
+            <!-- ============================= -->
+            <div id="screen-partner" class="screen">
+                 <header class="screen-header with-border">
+                     <div style="width: 32px;"></div>
+                     <div class="current-date">Партнер</div>
+                     <div class="header-icons"></div>
+                 </header>
+                 <p class="placeholder-text">Раздел "Партнер"</p>
+            </div>
+
+             <!-- ============================= -->
+             <!-- ==== Экран "Календарь" ==== -->
+             <!-- ============================= -->
+            <div id="screen-calendar-view" class="screen">
+                 <header class="screen-header with-border"> <!-- White header -->
+                     <div class="close-button" onclick="goBack()" data-feather="x"></div>
+                     <div class="calendar-nav">
+                         <div class="month-year-toggle">
+                             <button class="toggle-btn active" id="calendar-view-month">Месяц</button>
+                             <button class="toggle-btn" id="calendar-view-year">Год</button>
+                         </div>
+                     </div>
+                     <div style="width: 34px;"></div> <!-- Spacer for close button -->
+                 </header>
+
+                 <div class="calendar-main-area">
+                     {/* --- Месячный вид --- */}
+                     <div id="calendar-month-container">
+                         {/* Навигация по месяцам (добавлено) */}
+                          <div class="month-navigation">
+                             <button class="month-nav-arrow" id="prev-month" data-feather="chevron-left"></button>
+                             <span class="month-year-display">Март 2025</span> {/* Update dynamically */}
+                             <button class="month-nav-arrow" id="next-month" data-feather="chevron-right"></button>
+                         </div>
+                         <div class="calendar-grid-container">
+                             <div class="calendar-weekdays">
+                                 <div>П</div><div>В</div><div>С</div><div>Ч</div><div>П</div><div>С</div><div>В</div>
+                             </div>
+                             <div class="calendar-days-grid">
+                                 {/* Static example for March 2025 */}
+                                 <div class="day other-month"><span class="day-number">24</span></div> <div class="day other-month"><span class="day-number">25</span></div> <div class="day other-month"><span class="day-number">26</span></div> <div class="day other-month"><span class="day-number">27</span></div><div class="day other-month"><span class="day-number">28</span></div>
+                                 <div class="day"><span class="day-number">1</span></div><div class="day"><span class="day-number">2</span></div>
+                                 <div class="day"><span class="day-number">3</span></div> <div class="day"><span class="day-number">4</span></div> <div class="day"><span class="day-number">5</span></div> <div class="day"><span class="day-number">6</span></div><div class="day"><span class="day-number">7</span></div> <div class="day"><span class="day-number">8</span></div><div class="day"><span class="day-number">9</span></div>
+                                 <div class="day"><span class="day-number">10</span></div> <div class="day day-fertile-maybe"><span class="day-number">11</span></div> <div class="day day-fertile-maybe"><span class="day-number">12</span></div> <div class="day day-fertile-predicted"><span class="day-number">13</span></div><div class="day day-fertile-predicted"><span class="day-number">14</span></div><div class="day day-ovulation-predicted"><span class="day-number">15</span><div class="day-indicator"></div></div><div class="day day-fertile-predicted"><span class="day-number">16</span></div>
+                                 <div class="day day-fertile-maybe"><span class="day-number">17</span></div> <div class="day day-period"><span class="day-number">18</span><div class="day-indicator"><span></span><span></span></div></div> <div class="day day-period day-today"><span class="day-number">19</span><div class="day-indicator"><span></span><span></span></div></div><div class="day day-period"><span class="day-number">20</span><div class="day-indicator"><span></span><span></span></div></div><div class="day day-period"><span class="day-number">21</span><div class="day-indicator"><span></span><span></span></div></div><div class="day day-period"><span class="day-number">22</span><div class="day-indicator"><span></span><span></span></div></div><div class="day"><span class="day-number">23</span></div>
+                                 <div class="day"><span class="day-number">24</span></div> <div class="day"><span class="day-number">25</span></div><div class="day day-period-predicted"><span class="day-number">26</span><div class="day-indicator"><span></span><span></span></div></div><div class="day day-period-predicted"><span class="day-number">27</span><div class="day-indicator"><span></span><span></span></div></div><div class="day day-period-predicted"><span class="day-number">28</span><div class="day-indicator"><span></span><span></span></div></div><div class="day day-period-predicted"><span class="day-number">29</span><div class="day-indicator"><span></span><span></span></div></div><div class="day day-period-predicted"><span class="day-number">30</span><div class="day-indicator"><span></span><span></span></div></div>
+                                 <div class="day"><span class="day-number">31</span></div>
+                                 <div class="day other-month"><span class="day-number">1</span></div> <div class="day other-month"><span class="day-number">2</span></div> <div class="day other-month"><span class="day-number">3</span></div> <div class="day other-month"><span class="day-number">4</span></div> <div class="day other-month"><span class="day-number">5</span></div> <div class="day other-month"><span class="day-number">6</span></div>
+                             </div>
+                         </div>
+                     </div>
+
+                     {/* --- Годовой вид --- */}
+                     <div id="calendar-year-container" style="display: none;">
+                         <div class="year-grid-header">2025</div> {/* Example Year */}
+                         <div class="year-grid">
+                              <div class="month-grid-item"><h3>Январь</h3><div class="mini-month-days">{/* 31 days */}</div></div>
+                              <div class="month-grid-item"><h3>Февраль</h3><div class="mini-month-days">{/* 28 days */}</div></div>
+                              <div class="month-grid-item"><h3>Март</h3><div class="mini-month-days">{/* 31 days */}</div></div>
+                              <div class="month-grid-item"><h3>Апрель</h3><div class="mini-month-days">{/* 30 days */}</div></div>
+                              <div class="month-grid-item"><h3>Май</h3><div class="mini-month-days">{/* 31 days */}</div></div>
+                              <div class="month-grid-item"><h3>Июнь</h3><div class="mini-month-days">{/* 30 days */}</div></div>
+                              <div class="month-grid-item"><h3>Июль</h3><div class="mini-month-days">{/* 31 days */}</div></div>
+                              <div class="month-grid-item"><h3>Август</h3><div class="mini-month-days">{/* 31 days */}</div></div>
+                              <div class="month-grid-item"><h3>Сентябрь</h3><div class="mini-month-days">{/* 30 days */}</div></div>
+                              <div class="month-grid-item"><h3>Октябрь</h3><div class="mini-month-days">{/* 31 days */}</div></div>
+                              <div class="month-grid-item"><h3>Ноябрь</h3><div class="mini-month-days">{/* 30 days */}</div></div>
+                              <div class="month-grid-item"><h3>Декабрь</h3><div class="mini-month-days">{/* 31 days */}</div></div>
+                         </div>
+                          {/* Add more years if needed */}
+                     </div>
+                 </div>
+
+                 {/* Нижняя панель (может быть скрыта для годового вида) */}
+                 <div class="calendar-bottom-section" id="calendar-month-bottom-panel">
+                     <div class="calendar-date-info">
+                         <span class="date-text">Марта 19・3-й день цикла</span>
+                         <span class="close-icon" data-feather="x"></span>
+                     </div>
+                     <div class="symptoms-events-section">
+                         <h3>Симптомы и события</h3>
+                         <div class="symptoms-events-content">
+                             {/* Иконки из скриншота */}
+                             <div class="symptom-item">
+                                 <span class="icon">👟</span>
+                                 120 шаги
+                             </div>
+                              <div class="symptom-item">
+                                 <span class="icon">📍</span>
+                                 4.0 км
+                             </div>
+                              <div class="symptom-item" style="opacity: 0.5;">
+                                 <span class="icon">💧</span>
+                                 Вода
+                             </div>
+                              <div class="symptom-item" style="opacity: 0.5;">
+                                 <span class="icon">⚖️</span>
+                                 Вес
+                             </div>
+                             <button class="add-event-btn">+</button>
+                         </div>
+                     </div>
+                     <section class="daily-stats">
+                         <h2>Статьи на каждый день</h2>
+                         <div class="cards-container">
+                              {/* Карточки для 19 марта */}
+                              <div class="card fertility-card">
+                                 <div class="card-header"><span class="check-icon" data-feather="check-circle"></span> Помощник по здоровью</div>
+                                 <p>Вероятность забеременеть сегодня</p>
+                                 <a href="#">Перейти к прогнозу</a>
+                            </div>
+                             <div class="card assistant-card">
+                                <div class="card-header">Помощник по здоровью</div>
+                                <p>Начало менструации</p>
+                                 <span class="subtext-icon" data-feather="message-circle"></span>
+                            </div>
+                            <div class="card possible-symptoms-card">
+                                 <div class="card-header">19 марта:</div>
+                                 <p>возможные симптомы</p>
+                                 <div class="symptom-icons-row">
+                                     <span class="s-icon">😊</span> <span class="s-icon">😥</span> <span class="s-icon">💖</span>
+                                 </div>
+                            </div>
+                            <div class="card generic-info-card">
+                                <p>Полнолуние как влияет на...</p> {/* Пример другой карточки */}
+                            </div>
+                         </div>
+                     </section>
+                 </div>
+            </div>
+
+            <!-- ============================ -->
+            <!-- ==== Экран "Настройки" ==== -->
+            <!-- ============================ -->
+            <div id="screen-settings" class="screen">
+                 <header class="screen-header with-border">
+                      <div class="close-button" onclick="goBack()" data-feather="x"></div>
+                     <div class="current-date">Настройки</div>
+                     <div style="width: 34px;"></div> <!-- Spacer -->
+                 </header>
+                 <section class="settings-goal">
+                     <h3>Цель использования:</h3>
+                     <div class="goal-buttons">
+                         <button class="goal-btn active">Следить за циклом</button>
+                         <button class="goal-btn">Забеременеть</button>
+                         <button class="goal-btn">Отслеживать бер.</button> <!-- Сокращение -->
+                     </div>
+                 </section>
+                 <ul class="settings-list">
+                     <li class="settings-item"> <span class="settings-icon" data-feather="file-text"></span> <span class="settings-item-text">Отчет для врача</span> <span class="arrow" data-feather="chevron-right"></span></li>
+                     <li class="settings-item" id="nav-to-detailed-stats-from-settings"> <span class="settings-icon" data-feather="bar-chart-2"></span> <span class="settings-item-text">Графики и отчеты</span> <span class="arrow" data-feather="chevron-right"></span></li>
+                     <li class="settings-item"> <span class="settings-icon" data-feather="refresh-cw"></span> <span class="settings-item-text">Цикл и овуляция</span> <span class="arrow" data-feather="chevron-right"></span></li>
+                     <li class="settings-item"> <span class="settings-icon" data-feather="settings"></span> <span class="settings-item-text">Настройки приложения</span> <span class="arrow" data-feather="chevron-right"></span></li>
+                     <li class="settings-item"> <span class="settings-icon" data-feather="shield"></span> <span class="settings-item-text">Настройки конфиденциальности</span> <span class="arrow" data-feather="chevron-right"></span></li>
+                     <li class="settings-item"> <span class="settings-icon" data-feather="lock"></span> <span class="settings-item-text">Код доступа</span> <span class="arrow" data-feather="chevron-right"></span></li>
+                     <li class="settings-item"> <span class="settings-icon" data-feather="bell"></span> <span class="settings-item-text">Напоминания</span> <span class="arrow" data-feather="chevron-right"></span></li>
+                     <li class="settings-item"> <span class="settings-icon" data-feather="help-circle"></span> <span class="settings-item-text">Помощь</span> <span class="arrow" data-feather="chevron-right"></span></li>
+                 </ul>
+                  <div class="privacy-shield">
+                     <div class="shield-icon" data-feather="shield"></div>
+                     <h3>Ваши данные защищены</h3>
+                     <p>Неприкосновенность ваших личных сведений — наш приоритет. Мы не продаем ваши данные…</p>
+                 </div>
+            </div>
+
+        </main>
+
+        <!-- ========================== -->
+        <!-- ==== Нижняя навигация ==== -->
+        <!-- ========================== -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-target="screen-today">
+                <span class="nav-icon" data-feather="calendar"></span>
+                <span class="nav-label">Сегодня</span>
+            </button>
+            <button class="nav-btn" data-target="screen-articles">
+                <span class="nav-icon" data-feather="grid"></span>
+                <span class="nav-label">Статьи</span>
+            </button>
+            <button class="nav-btn" data-target="screen-partner">
+                <span class="nav-icon" data-feather="users"></span>
+                <span class="nav-label">Партнер</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
